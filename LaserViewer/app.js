@@ -1,15 +1,20 @@
 ﻿function drawGcode() {
+    var m = 3;
     var gcode = document.getElementById('gcode').value;
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
 
+    function isNum(o) {
+        return typeof o === 'number';
+    }
+
     function buildGcodeArray(gcode) {
         var array = [];
         var lines = gcode.split('\n');
-        lines.forEach(function(line) {
+        lines.forEach(function (line) {
             var parts = line.split(' ');
             var params = {};
-            parts.forEach(function(part) {
+            parts.forEach(function (part) {
                 function parameterize(part) {
                     return { 'name': part[0], 'value': Number(part.substr(1)) };
                 }
@@ -22,9 +27,13 @@
     }
     var gcodeObject = buildGcodeArray(gcode);
 
+    var absolutePositioning = true;
+    var metricUnits = true;
+    var x = 0;
+    var y = 0;
     var interpreters = {};
     interpreters["M106"] = function (params) {
-        if (typeof params["S"] === 'number' && params["S"] <= 255 && params["S"] >= 0) {
+        if (isNum(params["S"]) && params["S"] <= 255 && params["S"] >= 0) {
             function hexify(val) {
                 return ('00' + val.toString(16)).substr(-2);
             }
@@ -33,216 +42,86 @@
             context.strokeStyle = '#' + r + '00' + b;
         }
     };
+    interpreters["G90"] = function () { absolutePositioning = true; };
+    interpreters["G91"] = function () { absolutePositioning = false; };
+    interpreters["G20"] = function () { metricUnits = true; };
+    interpreters["G21"] = function () { metricUnits = false; };
+    interpreters["G1"] = function (params) {
+        var xIsNum = isNum(params["X"]);
+        var yIsNum = isNum(params["Y"]);
+        if (xIsNum || yIsNum) {
+            var newX = absolutePositioning ? 0 : x;
+            var newY = absolutePositioning ? 0 : y;
 
+            if (xIsNum) {
+                newX += params["X"];
+            }
+            if (yIsNum) {
+                newY += params["Y"];
+            }
+
+            context.beginPath();
+            context.moveTo(x*m, y*m);
+            context.lineTo(newX*m, newY*m);
+            context.stroke();
+
+            x = newX;
+            y = newY;
+        }
+    };
+    interpreters["G2"] = function (params) { //TODO: make this actually draw a clockwise circular line.
+        var xIsNum = isNum(params["X"]);
+        var yIsNum = isNum(params["Y"]);
+        if (xIsNum || yIsNum) {
+            var newX = absolutePositioning ? 0 : x;
+            var newY = absolutePositioning ? 0 : y;
+
+            if (xIsNum) {
+                newX += params["X"];
+            }
+            if (yIsNum) {
+                newY += params["Y"];
+            }
+
+            //context.arc(x,y,r,sAngle,eAngle,counterclockwise);
+            context.beginPath();
+            context.moveTo(x * m, y * m);
+            context.lineTo(newX * m, newY * m);
+            context.stroke();
+
+            x = newX;
+            y = newY;
+        }
+    };
+    interpreters["G3"] = function (params) { //TODO: make this actually draw a counterclockwise circular line.
+        var xIsNum = isNum(params["X"]);
+        var yIsNum = isNum(params["Y"]);
+        if (xIsNum || yIsNum) {
+            var newX = absolutePositioning ? 0 : x;
+            var newY = absolutePositioning ? 0 : y;
+
+            if (xIsNum) {
+                newX += params["X"];
+            }
+            if (yIsNum) {
+                newY += params["Y"];
+            }
+
+            //context.arc(x,y,r,sAngle,eAngle,counterclockwise);
+            context.beginPath();
+            context.moveTo(x * m, y * m);
+            context.lineTo(newX * m, newY * m);
+            context.stroke();
+
+            x = newX;
+            y = newY;
+        }
+    };
+    
     gcodeObject.forEach(function (obj) {
         var fn = interpreters[obj.name];
         if (fn) {
             fn(obj.params);
         }
     });
-
-    //context.strokeStyle = '#ff0000';
-    context.beginPath();
-    context.moveTo(10, 45);
-    context.lineTo(180, 47);
-    context.stroke();
 }
-
-/*
-M106 S0
-
-G90
-G21
-G1 F1000
-G1  X190.5 Y76.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X266.7 Y76.2
-G2 X271.1901 Y74.3401 I0. J-6.35
-G2 X273.05 Y69.85 I-4.4901 J-4.4901
-G1  X273.05 Y19.05
-G2 X271.1901 Y14.5599 I-6.35 J-0.
-G2 X266.7 Y12.7 I-4.4901 J4.4901
-G1  X190.5 Y12.7
-G2 X186.0099 Y14.5599 I-0. J6.35
-G2 X184.15 Y19.05 I4.4901 J4.4901
-G1  X184.15 Y69.85
-G2 X186.0099 Y74.3401 I6.35 J0.
-G2 X190.5 Y76.2 I4.4901 J-4.4901
-G1  X190.5 Y76.2
-G4 P0 
-M106 S0
-G1 F1000
-G1  X190.5 Y139.7
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X266.7 Y139.7
-G2 X271.1901 Y137.8401 I-0. J-6.35
-G2 X273.05 Y133.35 I-4.4901 J-4.4901
-G1  X273.05 Y82.55
-G2 X271.1901 Y78.0599 I-6.35 J0.
-G2 X266.7 Y76.2 I-4.4901 J4.4901
-G1  X190.5 Y76.2
-G2 X186.0099 Y78.0599 I0. J6.35
-G2 X184.15 Y82.55 I4.4901 J4.4901
-G1  X184.15 Y133.35
-G2 X186.0099 Y137.8401 I6.35 J0.
-G2 X190.5 Y139.7 I4.4901 J-4.4901
-G1  X190.5 Y139.7
-G4 P0 
-M106 S0
-G1 F1000
-G1  X190.5 Y203.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X266.7 Y203.2
-G2 X271.1901 Y201.3401 I0. J-6.35
-G2 X273.05 Y196.85 I-4.4901 J-4.4901
-G1  X273.05 Y146.05
-G2 X271.1901 Y141.5599 I-6.35 J-0.
-G2 X266.7 Y139.7 I-4.4901 J4.4901
-G1  X190.5 Y139.7
-G2 X186.0099 Y141.5599 I-0. J6.35
-G2 X184.15 Y146.05 I4.4901 J4.4901
-G1  X184.15 Y196.85
-G2 X186.0099 Y201.3401 I6.35 J0.
-G2 X190.5 Y203.2 I4.4901 J-4.4901
-G1  X190.5 Y203.2
-G4 P0 
-M106 S0
-G1 F1000
-G1  X101.6 Y203.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X177.8 Y203.2
-G2 X182.2901 Y201.3401 I0. J-6.35
-G2 X184.15 Y196.85 I-4.4901 J-4.4901
-G1  X184.15 Y146.05
-G2 X182.2901 Y141.5599 I-6.35 J-0.
-G2 X177.8 Y139.7 I-4.4901 J4.4901
-G1  X101.6 Y139.7
-G2 X97.1099 Y141.5599 I0. J6.35
-G2 X95.25 Y146.05 I4.4901 J4.4901
-G1  X95.25 Y196.85
-G2 X97.1099 Y201.3401 I6.35 J-0.
-G2 X101.6 Y203.2 I4.4901 J-4.4901
-G1  X101.6 Y203.2
-G4 P0 
-M106 S0
-G1 F1000
-G1  X101.6 Y139.7
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X177.8 Y139.7
-G2 X182.2901 Y137.8401 I0. J-6.35
-G2 X184.15 Y133.35 I-4.4901 J-4.4901
-G1  X184.15 Y82.55
-G2 X182.2901 Y78.0599 I-6.35 J-0.
-G2 X177.8 Y76.2 I-4.4901 J4.4901
-G1  X101.6 Y76.2
-G2 X97.1099 Y78.0599 I-0. J6.35
-G2 X95.25 Y82.55 I4.4901 J4.4901
-G1  X95.25 Y133.35
-G2 X97.1099 Y137.8401 I6.35 J-0.
-G2 X101.6 Y139.7 I4.4901 J-4.4901
-G1  X101.6 Y139.7
-G4 P0 
-M106 S0
-G1 F1000
-G1  X101.6 Y76.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X177.8 Y76.2
-G2 X182.2901 Y74.3401 I0. J-6.35
-G2 X184.15 Y69.85 I-4.4901 J-4.4901
-G1  X184.15 Y19.05
-G2 X182.2901 Y14.5599 I-6.35 J-0.
-G2 X177.8 Y12.7 I-4.4901 J4.4901
-G1  X101.6 Y12.7
-G2 X97.1099 Y14.5599 I-0. J6.35
-G2 X95.25 Y19.05 I4.4901 J4.4901
-G1  X95.25 Y69.85
-G2 X97.1099 Y74.3401 I6.35 J-0.
-G2 X101.6 Y76.2 I4.4901 J-4.4901
-G1  X101.6 Y76.2
-G4 P0 
-M106 S0
-G1 F1000
-G1  X12.7 Y76.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X88.9 Y76.2
-G2 X93.3901 Y74.3402 I-0. J-6.35
-G2 X95.25 Y69.85 I-4.4901 J-4.4901
-G1  X95.25 Y19.05
-G2 X93.3901 Y14.5599 I-6.35 J-0.
-G2 X88.9 Y12.7 I-4.4901 J4.4901
-G1  X12.7 Y12.7
-G2 X8.2099 Y14.5599 I0. J6.35
-G2 X6.35 Y19.05 I4.4901 J4.4901
-G1  X6.35 Y69.85
-G2 X8.2099 Y74.3402 I6.35 J-0.
-G2 X12.7 Y76.2 I4.4901 J-4.4901
-G1  X12.7 Y76.2
-G4 P0 
-M106 S0
-G1 F1000
-G1  X12.7 Y139.7
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X88.9 Y139.7
-G2 X93.3901 Y137.8402 I-0. J-6.35
-G2 X95.25 Y133.35 I-4.4901 J-4.4901
-G1  X95.25 Y82.55
-G2 X93.3901 Y78.0599 I-6.35 J0.
-G2 X88.9 Y76.2 I-4.4901 J4.4901
-G1  X12.7 Y76.2
-G2 X8.2099 Y78.0599 I0. J6.35
-G2 X6.35 Y82.55 I4.4901 J4.4901
-G1  X6.35 Y133.35
-G2 X8.2099 Y137.8402 I6.35 J-0.
-G2 X12.7 Y139.7 I4.4901 J-4.4901
-G1  X12.7 Y139.7
-G4 P0 
-M106 S0
-G1 F1000
-G1  X12.7 Y203.2
-G4 P0 
-M106 S255
-G4 P250
-G1 F50.000000
-G1  X88.9 Y203.2
-G2 X93.3901 Y201.3401 I0. J-6.35
-G2 X95.25 Y196.85 I-4.4901 J-4.4901
-G1  X95.25 Y146.05
-G2 X93.3901 Y141.5599 I-6.35 J0.
-G2 X88.9 Y139.7 I-4.4901 J4.4901
-G1  X12.7 Y139.7
-G2 X8.2099 Y141.5599 I0. J6.35
-G2 X6.35 Y146.05 I4.4901 J4.4901
-G1  X6.35 Y196.85
-G2 X8.2099 Y201.3401 I6.35 J-0.
-G2 X12.7 Y203.2 I4.4901 J-4.4901
-G1  X12.7 Y203.2
-G4 P0 
-M106 S0
-G1 F1000
-G1 X0 Y0
-M18
-*/
