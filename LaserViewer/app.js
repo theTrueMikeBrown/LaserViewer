@@ -8,6 +8,10 @@
         return typeof o === 'number';
     }
 
+    function cleanName(name) {
+        return name[0] + Number(name.substr(1));
+    }
+
     function buildGcodeArray(gcode) {
         var array = [];
         var lines = gcode.split('\n');
@@ -21,7 +25,7 @@
                 var param = parameterize(part);
                 params[param.name] = param.value;
             });
-            array.push({ 'name': parts[0], 'params': params });
+            array.push({ 'name': cleanName(parts[0]), 'params': params });
         });
         return array;
     }
@@ -46,6 +50,37 @@
     interpreters["G91"] = function () { absolutePositioning = false; };
     interpreters["G20"] = function () { metricUnits = true; };
     interpreters["G21"] = function () { metricUnits = false; };
+    interpreters["G28"] = function(params) {
+        var xIsNum = isNum(params["X"]);
+        var yIsNum = isNum(params["Y"]);
+        if (xIsNum || yIsNum) {
+            var newX = absolutePositioning ? 0 : x;
+            var newY = absolutePositioning ? 0 : y;
+
+            if (xIsNum) {
+                newX += params["X"];
+            }
+            if (yIsNum) {
+                newY += params["Y"];
+            }
+
+            context.beginPath();
+            context.moveTo(x * m, y * m);
+            context.lineTo(newX * m, newY * m);
+            context.stroke();
+
+            x = newX;
+            y = newY;
+        }
+
+        context.beginPath();
+        context.moveTo(x * m, y * m);
+        context.lineTo(0, 0);
+        context.stroke();
+
+        x = 0;
+        y = 0;
+    };
     interpreters["G1"] = function (params) {
         var xIsNum = isNum(params["X"]);
         var yIsNum = isNum(params["Y"]);
@@ -69,6 +104,7 @@
             y = newY;
         }
     };
+    interpreters["G0"] = interpreters["G1"];
     interpreters["G2"] = function (params) { //TODO: make this actually draw a clockwise circular line.
         //angle = atan2(y - cy, x - cx)
         var xIsNum = isNum(params["X"]);
