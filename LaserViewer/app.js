@@ -12,7 +12,7 @@
         var array = [];
         var lines = gcode.split('\n');
         lines.forEach(function (line) {
-            var parts = line.split(' ');
+            var parts = line.split(';')[0].split(' ');
             var params = {};
             parts.forEach(function (part) {
                 function parameterize(part) {
@@ -70,6 +70,7 @@
         }
     };
     interpreters["G2"] = function (params) { //TODO: make this actually draw a clockwise circular line.
+        //angle = atan2(y - cy, x - cx)
         var xIsNum = isNum(params["X"]);
         var yIsNum = isNum(params["Y"]);
         if (xIsNum || yIsNum) {
