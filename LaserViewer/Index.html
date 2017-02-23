@@ -6,8 +6,21 @@
     <link href="styles.css" rel="stylesheet" />
 </head>
 <body>
-<div id="inputs">
-    <textarea id="gcode">M106 S0
+    <div id="viewpane">
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+    <div id="inputs">
+        <div>
+            xSize:<input type="text" id="xSize" value="253" />
+            ySize:<input type="text" id="ySize" value="235" />
+            xOffset:<input type="text" id="xOffset" value="0" />
+            yOffset:<input type="text" id="yOffset" value="0" />
+            <button onclick="applyOffset()">Apply Offset</button>
+            <button onclick="drawGcode()">Draw</button>
+        </div>
+        <div>
+            <textarea id="gcode" id="text" rows="30" cols="100">
+M106 S0
 
 G90
 G21
@@ -203,12 +216,9 @@ M106 S0
 G1 F1000
 G1 X0 Y0
 M18
-</textarea>
-    <button onclick="drawGcode()">Draw</button>
-</div>
-<div id="viewpane">
-    <canvas id="canvas" width="1024" height="768"></canvas>
-</div>
-<script src="app.js"></script>
+            </textarea>
+        </div>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>

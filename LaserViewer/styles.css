@@ -1,4 +1,6 @@
 ﻿#viewpane {
     margin: 1em;
     border: 1px black solid;
+    width: 650px;
+    height: 490px;
 }
