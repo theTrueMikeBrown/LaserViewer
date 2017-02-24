@@ -10,14 +10,16 @@
         <canvas id="canvas" width="640" height="480"></canvas>
     </div>
     <div id="inputs">
-        <div>
-            xSize:<input type="text" id="xSize" value="253" />
-            ySize:<input type="text" id="ySize" value="235" />
-            xOffset:<input type="text" id="xOffset" value="0" />
-            yOffset:<input type="text" id="yOffset" value="0" />
-            <button onclick="applyOffset()">Apply Offset</button>
-            <button onclick="drawGcode()">Draw</button>
-        </div>
+            <div>
+                Bed X size:<input type="text" id="xSize" value="253" />
+                Bed Y size:<input type="text" id="ySize" value="235"/>
+                <button onclick="drawGcode()">Draw</button>
+            </div>
+            <div>
+                X offset:<input type="text" id="xOffset" value="0" />
+                Y offset:<input type="text" id="yOffset" value="0" />
+                <button onclick="applyOffset()">Apply Offset</button>
+            </div>
         <div>
             <textarea id="gcode" id="text" rows="30" cols="100">
 M106 S0
@@ -219,6 +221,8 @@ M18
             </textarea>
         </div>
     </div>
+<div>Like this site?
+    <a href="https://www.patreon.com/theTrueMikeBrown" target="_blank" rel="noopener noreferrer" data-event-category="support" data-event-action="patreon"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon_logo.png" style="height: 1em;" /> support me on Patreon</a></div>
     <script src="app.js"></script>
 </body>
 </html>
