@@ -49,6 +49,8 @@ function drawGcode() {
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.strokeStyle = '#000';
     context.strokeRect(0, 0, xSize * m, ySize * m);
 
     function isNum(o) {

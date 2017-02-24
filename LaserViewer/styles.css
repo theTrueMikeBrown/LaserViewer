@@ -1,6 +1,15 @@
 ﻿#viewpane {
     margin: 1em;
     border: 1px black solid;
-    width: 650px;
-    height: 490px;
+    width: 95%;
+    height: 450px;
+    overflow: auto;
+}
+
+.lilBadge {
+    height: 1em;
+}
+
+.inputRow {
+    margin-bottom: .5em;
 }

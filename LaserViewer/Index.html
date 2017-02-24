@@ -7,21 +7,21 @@
 </head>
 <body>
     <div id="viewpane">
-        <canvas id="canvas" width="640" height="480"></canvas>
+        <canvas id="canvas" width="1024" height="768"></canvas>
     </div>
     <div id="inputs">
-            <div>
-                Bed X size:<input type="text" id="xSize" value="253" />
-                Bed Y size:<input type="text" id="ySize" value="235"/>
-                <button onclick="drawGcode()">Draw</button>
-            </div>
-            <div>
-                X offset:<input type="text" id="xOffset" value="0" />
-                Y offset:<input type="text" id="yOffset" value="0" />
-                <button onclick="applyOffset()">Apply Offset</button>
-            </div>
-        <div>
-            <textarea id="gcode" id="text" rows="30" cols="100">
+        <div class="inputRow">
+            Bed size: (X<input type="text" id="xSize" value="253" />, Y<input type="text" id="ySize" value="235"/>)
+            <button onclick="drawGcode()">Draw</button>
+        </div>
+        <div class="inputRow">
+            Offset Gcode: (X<input type="text" id="xOffset" value="0" />, Y<input type="text" id="yOffset" value="0" />)
+            <button onclick="applyOffset()">Apply Offset</button>
+        </div>
+    <div>
+    <div class="inputRow">
+        <div>Gcode</div>
+        <textarea id="gcode" id="text" rows="30" cols="100">
 M106 S0
 
 G90
@@ -219,10 +219,14 @@ G1 F1000
 G1 X0 Y0
 M18
             </textarea>
-        </div>
+    </div>    
     </div>
-<div>Like this site?
-    <a href="https://www.patreon.com/theTrueMikeBrown" target="_blank" rel="noopener noreferrer" data-event-category="support" data-event-action="patreon"><img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon_logo.png" style="height: 1em;" /> support me on Patreon</a></div>
+    </div>
+    <div class="inputRow">Like this site?
+        <a href="https://www.patreon.com/theTrueMikeBrown" target="_blank" rel="noopener noreferrer" data-event-category="support" data-event-action="patreon">
+            <img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon_logo.png" class="lilBadge"/> support me on Patreon
+        </a>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
