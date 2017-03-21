@@ -6,7 +6,7 @@ function buildGcodeArray(gcode) {
     var array = [];
     var lines = gcode.split('\n');
     lines.forEach(function (line) {
-        var parts = line.split(';')[0].split(' ');
+        var parts = line.trim().split(';')[0].split(' ');
         var params = {};
         parts.forEach(function (part) {
             function parameterize(part) {
@@ -18,6 +18,37 @@ function buildGcodeArray(gcode) {
         array.push({ 'name': cleanName(parts[0]), 'params': params });
     });
     return array;
+}
+
+function findExtremes() {
+    var gcode = document.getElementById('gcode').value;
+    var xMin = Number.MAX_VALUE;
+    var xMax = Number.MIN_VALUE;
+    var yMin = Number.MAX_VALUE;
+    var yMax = Number.MIN_VALUE;
+
+    var output = "";
+    var lines = gcode.split('\n');
+
+    lines.forEach(function (line) {
+        var xMatch = /(X)(-?\d*[\.]?\d+)/.exec(line);
+        if (xMatch) {
+            var x = xMatch[2];
+            xMin = Math.min(xMin, x);
+            xMax = Math.max(xMax, x);
+        }
+
+        var yMatch = /(Y)(-?\d*[\.]?\d+)/.exec(line);
+        if (yMatch) {
+            var y = yMatch[2];
+            yMin = Math.min(yMin, y);
+            yMax = Math.max(yMax, y);
+        }
+    });
+    document.getElementById('xMin').value = xMin;
+    document.getElementById('xMax').value = xMax;
+    document.getElementById('yMin').value = yMin;
+    document.getElementById('yMax').value = yMax;
 }
 
 function applyOffset() {
@@ -82,14 +113,14 @@ function drawGcode() {
         var cX = x + i;
         var cY = y + j;
         var r = Math.sqrt(i * i + j * j);
-        var sAngle = Math.atan2(y-cY, x-cX);
-        var eAngle = Math.atan2(newY-cY, newX-cX);
+        var sAngle = Math.atan2(y - cY, x - cX);
+        var eAngle = Math.atan2(newY - cY, newX - cX);
 
         context.beginPath();
         context.moveTo(x * m, y * m);
         context.arc(cX * m, cY * m, r * m, sAngle, eAngle, counterclockwise);
         context.stroke();
-        
+
         x = newX;
         y = newY;
     };
@@ -138,7 +169,7 @@ function drawGcode() {
     interpreters["G2"] = function (params) {
         drawArc(params, true);
     };
-    interpreters["G3"] = function(params) {
+    interpreters["G3"] = function (params) {
         drawArc(params, false);
     };
 
