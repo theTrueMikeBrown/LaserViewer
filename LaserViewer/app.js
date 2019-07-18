@@ -51,6 +51,24 @@ function findExtremes() {
     document.getElementById('yMax').value = yMax;
 }
 
+function applyScale() {
+    var gcode = document.getElementById('gcode').value;
+    var scale = Number(document.getElementById('scale').value);
+
+    var output = "";
+    var lines = gcode.split('\n');
+
+    lines.forEach(function (line) {
+        line = line.replace(/(X)(-?\d*[\.]?\d+)/, function (match, p1, p2) { return p1 + (Number(p2) * scale); });
+        line = line.replace(/(Y)(-?\d*[\.]?\d+)/, function (match, p1, p2) { return p1 + (Number(p2) * scale); });
+        line = line.replace(/(I)(-?\d*[\.]?\d+)/, function (match, p1, p2) { return p1 + (Number(p2) * scale); });
+        line = line.replace(/(J)(-?\d*[\.]?\d+)/, function (match, p1, p2) { return p1 + (Number(p2) * scale); });
+        output += line + '\n';
+    });
+
+    document.getElementById('gcode').value = output;
+}
+
 function applyOffset() {
     var gcode = document.getElementById('gcode').value;
     var xOffset = Number(document.getElementById('xOffset').value);
