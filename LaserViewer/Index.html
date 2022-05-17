@@ -1,37 +1,40 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Laser Viewer</title>
-    <meta charset="utf-8" />
-    <link href="styles.css" rel="stylesheet" />
+  <title>Laser Viewer</title>
+  <meta charset="utf-8" />
+  <link href="styles.css" rel="stylesheet" />
 </head>
 <body>
-    <div id="viewpane">
-        <canvas id="canvas" width="1024" height="768"></canvas>
+  <div id="viewpane">
+    <canvas id="canvas" width="1024" height="768"></canvas>
+  </div>
+  <div id="inputs">
+    <div class="inputRow">
+      Bed size: (X<input type="text" id="xSize" value="253" />, Y<input type="text" id="ySize" value="235" />)
+      <button onclick="drawGcode()">Draw</button>
     </div>
-    <div id="inputs">
-        <div class="inputRow">
-            Bed size: (X<input type="text" id="xSize" value="253" />, Y<input type="text" id="ySize" value="235" />)
-            <button onclick="drawGcode()">Draw</button>
-        </div>
-        <div class="inputRow">
-            Offset Gcode: (X<input type="text" id="xOffset" value="0" />, Y<input type="text" id="yOffset" value="0" />)
-            <button onclick="applyOffset()">Apply Offset</button>
-        </div>
-        <div class="inputRow">
-            Scale Gcode: <input type="text" id="scale" value="1" />
-            <button onclick="applyScale()">Apply Scale</button>
-        </div>
-        <div class="inputRow">
-            Maxes and mins
-            Mins:(X<input type="text" id="xMin" value="0" />, Y<input type="text" id="yMin" value="0" />)
-            Maxes: (X<input type="text" id="xMax" value="0" />, Y<input type="text" id="yMax" value="0" />)
-            <button onclick="findExtremes()">Find Extremes</button>
-        </div>
-        <div>
-            <div class="inputRow">
-                <div>Gcode</div>
-                <textarea id="gcode" id="text" rows="30" cols="100">
+    <div class="inputRow">
+      Offset Gcode: (X<input type="text" id="xOffset" value="0" />, Y<input type="text" id="yOffset" value="0" />)
+      <button onclick="applyOffset()">Apply Offset</button>
+    </div>
+    <div class="inputRow">
+      Scale Gcode: <input type="text" id="scale" value="1" />
+      <button onclick="applyScale()">Apply Scale</button>
+    </div>
+    <div class="inputRow">
+      Maxes and mins
+      Mins:(X<input type="text" id="xMin" value="0" />, Y<input type="text" id="yMin" value="0" />)
+      Maxes: (X<input type="text" id="xMax" value="0" />, Y<input type="text" id="yMax" value="0" />)
+      <button onclick="findExtremes()">Find Extremes</button>
+    </div>
+    <div class="inputRow">
+      convert from https://github.com/avwuff/SVG-to-GCode format: <button onclick="cleanUp()">Do it!</button>
+    </div>
+  <div>
+      <div class="inputRow">
+        <div>Gcode</div>
+        <textarea id="gcode" id="text" rows="30" cols="100">
                     M106 S0
 
                     G90
@@ -229,15 +232,15 @@
                     G1 X0 Y0
                     M18
                 </textarea>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="inputRow">
-        Like this site?
-        <a href="https://www.patreon.com/theTrueMikeBrown" target="_blank" rel="noopener noreferrer" data-event-category="support" data-event-action="patreon">
-            <img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon_logo.png" class="lilBadge" /> support me on Patreon
-        </a>
-    </div>
-    <script src="app.js"></script>
+  </div>
+  <div class="inputRow">
+    Like this site?
+    <a href="https://www.patreon.com/theTrueMikeBrown" target="_blank" rel="noopener noreferrer" data-event-category="support" data-event-action="patreon">
+      <img src="https://s3.amazonaws.com/patreon_public_assets/toolbox/patreon_logo.png" class="lilBadge" /> support me on Patreon
+    </a>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
