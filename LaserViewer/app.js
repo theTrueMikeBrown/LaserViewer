@@ -20,11 +20,23 @@ function buildGcodeArray(gcode) {
     return array;
 }
 
+function flipVertical() {
+    let gcode = document.getElementById('gcode').value;
+    gcode = doScale(gcode, 1, -1);
+    document.getElementById('gcode').value = gcode;
+}
+
+function flipHorizontal() {
+    let gcode = document.getElementById('gcode').value;
+    gcode = doScale(gcode, -1, 1);
+    document.getElementById('gcode').value = gcode;
+}
+
 function cleanUp() {
     let gcode = document.getElementById('gcode').value;
 
     gcode = gcode.replace("G20 (Units are in Inches)", "M106 S0\nG21"); //convert to metric step 1
-    gcode = doScale(gcode, -25.4, -25.4); // step 2
+    gcode = doScale(gcode, 25.4, -25.4); // step 2
     gcode = gcode.replace("G61 (Go to exact corners)", ""); //removing useless gcode
 
     document.getElementById('gcode').value = gcode;
@@ -155,8 +167,8 @@ function drawGcode() {
 
     function drawLine(newX, newY) {
         context.beginPath();
-        context.moveTo(x * m, y * m);
-        context.lineTo(newX * m, newY * m);
+        context.moveTo(xSize - x * m, y * m);
+        context.lineTo(xSize - newX * m, newY * m);
         context.stroke();
 
         x = newX;
@@ -178,12 +190,12 @@ function drawGcode() {
         var cX = x + i;
         var cY = y + j;
         var r = Math.sqrt(i * i + j * j);
-        var sAngle = Math.atan2(y - cY, x - cX);
-        var eAngle = Math.atan2(newY - cY, newX - cX);
+        var sAngle = Math.atan2(y - cY, xSize - x - cX);
+        var eAngle = Math.atan2(newY - cY, xSize - newX - cX);
 
         context.beginPath();
-        context.moveTo(x * m, y * m);
-        context.arc(cX * m, cY * m, r * m, sAngle, eAngle, counterclockwise);
+        context.moveTo(xSize - x * m, y * m);
+        context.arc(xSize - cX * m, cY * m, r * m, sAngle, eAngle, counterclockwise);
         context.stroke();
 
         x = newX;
